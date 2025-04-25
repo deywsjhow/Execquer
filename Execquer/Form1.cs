@@ -39,7 +39,7 @@ namespace Execquer
 
         private List<ConnInfo> LoadConnectionsFromJson()
         {
-            string path = "C:\\repos\\Execquer\\Execquer\\Connections.json";
+            string path = Path.Combine(Application.StartupPath, "Connections.json");
 
             if (!File.Exists(path))
                 return new List<ConnInfo>();
