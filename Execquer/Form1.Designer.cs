@@ -46,10 +46,6 @@ namespace Execquer
 
         private void InitializeComponent()
         {
-            // Update the line causing the error to use the correct constructor for the Icon property.
-            this.Icon = Properties.Resources.exequer_icon; // Original line causing the error
-
-            // Corrected line:
             this.Icon = new Icon(Properties.Resources.exequer_icon, new Size(32, 32));
             this.lblTitle = new System.Windows.Forms.Label();
             this.btnAddFiles = new System.Windows.Forms.Button();
