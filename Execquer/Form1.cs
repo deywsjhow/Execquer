@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -128,28 +129,42 @@ namespace Execquer
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            // Abrir diálogo para escolher o diretório
             DialogResult result = folderBrowserDialog.ShowDialog();
+            var con = GetSelectedConnectionString();
+            var baseName = con.Split(';')[1].Split('=')[1];
+
             if (result == DialogResult.OK)
             {
-                string selectedDirectory = folderBrowserDialog.SelectedPath;
-
-                // Nome do arquivo (pode customizar se quiser perguntar para o usuário)
-                string fileName = $"script_{DateTime.Now:yyyyMMdd_HHmmss}.sql";
-                string fullPath = Path.Combine(selectedDirectory, fileName);
-
-                try
+                // Exibe o formulário para o usuário escolher o nome do arquivo
+                NomeArquivoForm nomeArquivoForm = new NomeArquivoForm();
+                if (nomeArquivoForm.ShowDialog() == DialogResult.OK)
                 {
-                    // Escrever o conteúdo do txtPreview no arquivo
-                    File.WriteAllText(fullPath, txtPreview.Text);
-                    MessageBox.Show($"Arquivo salvo com sucesso em:\n{fullPath}", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Erro ao salvar o arquivo:\n{ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Pega o nome do arquivo digitado
+                    string fileName = $"{nomeArquivoForm.NomeArquivo}_{DateTime.Now:yyyyMMdd}_{baseName}";
+
+                    if (string.IsNullOrEmpty(fileName))
+                    {
+                        MessageBox.Show("Nome do arquivo não pode estar vazio.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    string selectedDirectory = folderBrowserDialog.SelectedPath;
+                    string fullPath = Path.Combine(selectedDirectory, $"{fileName}.sql");
+
+                    try
+                    {
+                        // Escrever o conteúdo do txtPreview no arquivo
+                        File.WriteAllText(fullPath, txtPreview.Text);
+                        MessageBox.Show($"Arquivo salvo com sucesso em:\n{fullPath}", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Erro ao salvar o arquivo:\n{ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
+
 
 
         private void BtnExecute_Click(object sender, EventArgs e)
